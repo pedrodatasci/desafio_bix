@@ -92,11 +92,18 @@ No Console da AWS → Redshift Serverless:
 - Adicione a IAM Role usada pelas funções de COPY
 - Marque a opção de acesso ao Redshift e ao S3
 
-### 6. Execute a Lambda `lambda_db`
+### 6. Recupere as credenciais do superusuário e crie as tabelas
+
+- Acesse o **AWS Secrets Manager** e copie o usuário e senha do segredo do Redshift (`admin_bix` ou equivalente).
+- Use essas credenciais para se conectar ao Query Editor v2.
+- Execute os arquivos SQL de criação de schema e tabelas que estão na pasta `utils/`:
+  - `utils/redshift_tables.sql`
+
+### 7. Execute a Lambda `lambda_db`
 
 Essa Lambda executa os comandos SQL (como `TRUNCATE` e `COPY`) no Redshift. Para isso:
 
-- Execute primeiro um `SELECT current_user` via Lambda (já está implementado)
+- A lambda irá executar um `SELECT 1` e irá falhar, porém irá criar o usuário associado a role.
 - Execute via Query Editor v2:
 
 ```sql
@@ -104,7 +111,7 @@ GRANT USAGE ON SCHEMA silver TO "IAMR:lambda-redshift-exec-role";
 GRANT ALL ON ALL TABLES IN SCHEMA silver TO "IAMR:lambda-redshift-exec-role";
 ```
 
-### 7. Execute a Step Function
+### 8. Execute a Step Function
 
 Após a infraestrutura e permissões configuradas, inicie o fluxo principal via AWS Step Functions.
 
@@ -123,4 +130,3 @@ Após a infraestrutura e permissões configuradas, inicie o fluxo principal via 
 ## 👨‍💻 Autor
 
 Desenvolvido por Pedro Sá para fins do desafio proposto.
-
